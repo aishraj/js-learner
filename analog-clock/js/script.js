@@ -1,14 +1,15 @@
-// inner variables
 var canvas, ctx;
 var clockRadius = 250;
 var clockImage;
+var filterStrength = 20;
+var frameTime = 0, lastLoop = new Date, thisLoop;
 
 // draw functions :
 function canvasClean() { // clear canvas function
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 
-function drawScene() { // The game loop to  be exectued as per the interval timer.
+function drawClock() { // The game loop to  be exectued as per the interval timer.
     canvasClean(); // Clean up the canvas
 
     var date = new Date();
@@ -94,6 +95,10 @@ function drawScene() { // The game loop to  be exectued as per the interval time
     ctx.restore();
 
     ctx.restore();
+    
+  var thisFrameTime = (thisLoop=new Date) - lastLoop;
+  frameTime+= (thisFrameTime - frameTime) / filterStrength;
+  lastLoop = thisLoop;
 }
 
 // initialization
@@ -101,6 +106,11 @@ $(document).ready(function() {
 
     canvas = $('#canvas')[0];
     ctx = canvas.getContext('2d');
-    //TODO add stuff to show and update the FPS during the run.
-    setInterval(drawScene, 1000); // The game loop
+
+    setInterval(drawClock, 1000); // The game loop
+    
+    var fpsOut = document.getElementById('fps');
+    setInterval(function(){
+      fpsOut.innerHTML = (1000/frameTime).toFixed(1) + " fps";
+    },1000);
 });
